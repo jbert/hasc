@@ -10,6 +10,13 @@ testData =
     [ TD "(" (Right [Open])
     , TD ")" (Right [Close])
     , TD "()" (Right [Open, Close])
+    , TD "\"\"" (Right [Str ""])
+    , TD "\"a\"" (Right [Str "a"])
+    , TD "\"abc-d_e_5\"" (Right [Str "abc-d_e_5"])
+    , TD "a" (Right [Sym "a"])
+    , TD "abc-d_e_5" (Right [Sym "abc-d_e_5"])
+    , TD "abc def" (Right [Sym "abc", Sym "def"])
+    , TD "\"abc\" \"def\"" (Right [Str "abc", Str "def"])
     ]
 
 ----------------

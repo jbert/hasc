@@ -14,9 +14,10 @@ hLexInStr s (c : rest) = hLexInStr (s ++ [c]) rest
 hLexInStr _ [] = Left "String with no closing quote"
 
 hLexInSym :: String -> String -> Either String [Token]
-hLexInSym s (' ' : rest) = fmap ((Sym s) :) (hLex rest)
-hLexInSym s (c : rest) = hLexInSym (s ++ [c]) rest
 hLexInSym s [] = Right $ [Sym s]
+hLexInSym s (c : rest)
+    | c == ' ' = fmap ((Sym s) :) (hLex rest)
+    | otherwise = hLexInSym (s ++ [c]) rest
 
 hLex :: String -> Either String [Token]
 hLex [] = Right []
@@ -24,4 +25,4 @@ hLex ('(' : rest) = fmap (Open :) (hLex rest)
 hLex (')' : rest) = fmap (Close :) (hLex rest)
 hLex (' ' : rest) = hLex rest
 hLex ('"' : rest) = hLexInStr "" rest
-hLex (c : rest) = fmap ((Sym (c : "")) :) (hLex rest)
+hLex s@(_ : _) = hLexInSym "" s
