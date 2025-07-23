@@ -24,7 +24,7 @@ library
         warnings
         , deps
     exposed-modules:
-        Hasc
+        Hasc.Lex
     -- other-modules:
     -- other-extensions:
     hs-source-dirs:   src

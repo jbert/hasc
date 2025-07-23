@@ -1,4 +1,4 @@
-module Hasc
+module Hasc.Lex
 where
 
 import Data.Char

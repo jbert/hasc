@@ -1,6 +1,6 @@
 module HLex (hLexTests) where
 
-import Hasc
+import Hasc.Lex
 import Test.HUnit
 
 data TD = TD {prog :: String, expected :: Either String [Token]}

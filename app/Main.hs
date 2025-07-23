@@ -1,6 +1,6 @@
 module Main where
 
-import Hasc
+import Hasc.Lex
 
 main :: IO ()
 main = do
