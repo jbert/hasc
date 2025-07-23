@@ -20,6 +20,7 @@ testData =
     , TD "5" (Right [Nmb 5])
     , TD "52" (Right [Nmb 52])
     , TD "0" (Right [Nmb 0])
+    , TD "\"a\\a\"" (Left "Unknown backslash escape: 'a'")
     , TD "(foo 0)" (Right [Open, Sym "foo", Nmb 0, Close])
     ]
 
