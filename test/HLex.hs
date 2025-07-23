@@ -17,6 +17,10 @@ testData =
     , TD "abc-d_e_5" (Right [Sym "abc-d_e_5"])
     , TD "abc def" (Right [Sym "abc", Sym "def"])
     , TD "\"abc\" \"def\"" (Right [Str "abc", Str "def"])
+    , TD "5" (Right [Nmb 5])
+    , TD "52" (Right [Nmb 52])
+    , TD "0" (Right [Nmb 0])
+    , TD "(foo 0)" (Right [Open, Sym "foo", Nmb 0, Close])
     ]
 
 ----------------
