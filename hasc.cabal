@@ -25,6 +25,7 @@ library
         , deps
     exposed-modules:
         Hasc.Lex
+        Hasc.Parse
     -- other-modules:
     -- other-extensions:
     hs-source-dirs:   src

@@ -11,7 +11,14 @@ data Token
     | Sym {symVal :: String}
     | Nmb {nmbVal :: Double}
     | Str {strVal :: String}
-    deriving (Show, Eq)
+    deriving (Eq)
+
+instance Show Token where
+    show Open = "("
+    show Close = ")"
+    show (Sym s) = s
+    show (Str s) = s
+    show (Nmb n) = show n
 
 insertToken :: Token -> String -> Either String [Token]
 insertToken t s = fmap (t :) (hLex s)
@@ -32,7 +39,7 @@ digitChars :: String
 digitChars = ['0' .. '9']
 
 symChars :: String
-symChars = alphaChars ++ digitChars ++ ['_', '-']
+symChars = alphaChars ++ digitChars ++ ['_', '-', '+']
 
 hLexInSym :: String -> String -> Either String [Token]
 hLexInSym s [] = Right $ [Sym s]

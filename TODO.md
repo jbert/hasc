@@ -7,3 +7,13 @@
   (()
   -- Not an error, we don't require w/s around parens
   foo(
+
+- have parse initially be a single expression
+
+- then parse to a list of expressions
+  - wrapped in a `(do ...)` or similar
+
+- add some parsing tests
+  - do round-trip to string for ease
+
+- implement eval
