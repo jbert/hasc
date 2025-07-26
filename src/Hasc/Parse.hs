@@ -12,13 +12,22 @@ hParseList :: [Expr] -> [Token] -> Either String (Expr, [Token])
 hParseList _ [] = Left "No closing parens for list expression"
 hParseList acc (Close : rest) = Right (HList $ reverse acc, rest)
 hParseList acc (tok : rest) = do
-    (expr, _) <- hParse [tok]
+    (expr, _) <- hParseOne [tok]
     hParseList (expr : acc) rest
 
-hParse :: [Token] -> Either String (Expr, [Token])
-hParse [] = Left "Empty expression"
-hParse (atom@(Nmb _) : rest) = Right (Atom atom, rest)
-hParse (atom@(Sym _) : rest) = Right (Atom atom, rest)
-hParse (atom@(Str _) : rest) = Right (Atom atom, rest)
-hParse (Open : rest) = hParseList [] rest
-hParse (_ : _) = Left "Need open parens at start of list"
+hParseOne :: [Token] -> Either String (Expr, [Token])
+hParseOne [] = Left "Empty expression"
+hParseOne (atom@(Val (Nbr _)) : rest) = Right (Atom atom, rest)
+hParseOne (atom@(Val (Sym _)) : rest) = Right (Atom atom, rest)
+hParseOne (atom@(Val (Str _)) : rest) = Right (Atom atom, rest)
+hParseOne (Open : rest) = hParseList [] rest
+hParseOne (_ : _) = Left "Need open parens at start of list"
+
+hParse :: [Token] -> Either String Expr
+hParse toks = do
+    (expr, rest) <- hParseOne toks
+    if length rest > 0
+        then
+            Left "Multiple expressions"
+        else
+            Right expr

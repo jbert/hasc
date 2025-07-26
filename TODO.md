@@ -17,3 +17,5 @@
   - do round-trip to string for ease
 
 - implement eval
+
+- use Either instead of error for Callable?

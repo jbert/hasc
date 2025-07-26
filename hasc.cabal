@@ -18,6 +18,8 @@ common warnings
 common deps
     build-depends:
         base
+        , containers
+        , MissingH
 
 library 
     import:
@@ -26,6 +28,8 @@ library
     exposed-modules:
         Hasc.Lex
         Hasc.Parse
+        Hasc.Env
+        Hasc.Eval
     -- other-modules:
     -- other-extensions:
     hs-source-dirs:   src

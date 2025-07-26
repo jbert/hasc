@@ -5,26 +5,26 @@ import Data.Char
 
 -- import Debug.Trace
 
+data Val = Sym {symVal :: String} | Nbr {nbrVal :: Double} | Str {strVal :: String} deriving (Eq)
+
 data Token
     = Open
     | Close
-    | Sym {symVal :: String}
-    | Nmb {nmbVal :: Double}
-    | Str {strVal :: String}
+    | Val Val
     deriving (Eq)
 
 instance Show Token where
     show Open = "("
     show Close = ")"
-    show (Sym s) = s
-    show (Str s) = s
-    show (Nmb n) = show n
+    show (Val (Sym s)) = s
+    show (Val (Str s)) = s
+    show (Val (Nbr n)) = show n
 
 insertToken :: Token -> String -> Either String [Token]
 insertToken t s = fmap (t :) (hLex s)
 
 hLexInStr :: String -> String -> Either String [Token]
-hLexInStr s ('"' : rest) = insertToken (Str s) rest
+hLexInStr s ('"' : rest) = insertToken (Val $ Str s) rest
 hLexInStr _ ('\\' : "") = Left "Backslash in string with no closing quote"
 hLexInStr s ('\\' : '\\' : rest) = hLexInStr (s ++ "\\") rest
 hLexInStr s ('\\' : '"' : rest) = hLexInStr (s ++ "\"") rest
@@ -42,16 +42,16 @@ symChars :: String
 symChars = alphaChars ++ digitChars ++ ['_', '-', '+']
 
 hLexInSym :: String -> String -> Either String [Token]
-hLexInSym s [] = Right $ [Sym s]
+hLexInSym s [] = Right $ [Val $ Sym s]
 hLexInSym s (c : rest)
     | c `elem` symChars = hLexInSym (s ++ [c]) rest
-    | otherwise = insertToken (Sym s) rest
+    | otherwise = insertToken (Val $ Sym s) rest
 
 hLexNum :: Double -> String -> Either String [Token]
-hLexNum n [] = Right $ [Nmb n]
+hLexNum n [] = Right $ [Val $ Nbr n]
 hLexNum n s@(c : rest)
     | c `elem` digitChars = hLexNum ((n * 10) + (fromIntegral $ digitToInt c)) rest
-    | otherwise = insertToken (Nmb n) s
+    | otherwise = insertToken (Val $ Nbr n) s
 
 hLex :: String -> Either String [Token]
 -- hLex s | trace (show s) False = undefined
