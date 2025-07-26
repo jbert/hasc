@@ -1,21 +1,16 @@
-- Need to handle open/close parens in the middle of a symbol
+- add eval tests
 
-- Need tests for these:
-  (
-  )
-  )(
-  (()
-  -- Not an error, we don't require w/s around parens
-  foo(
+- Add special forms (if, do)
 
-- have parse initially be a single expression
+  
+- Add lambda
 
-- then parse to a list of expressions
-  - wrapped in a `(do ...)` or similar
+- Add let
 
-- add some parsing tests
-  - do round-trip to string for ease
+- add print
 
-- implement eval
+- add some basic library funcs
 
-- use Either instead of error for Callable?
+- work out "whole file" semantics
+  - top-level define
+  - implicit 'do'?
