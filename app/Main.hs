@@ -8,7 +8,8 @@ import Hasc.Parse
 main :: IO ()
 main = do
     -- let prog = "(+ \"foo\" 2)"
-    let prog = "(+ \"foo\" \"bar\")"
+    -- let prog = "(+ \"foo\" \"bar\")"
+    let prog = "(+ 1 2)"
     let eexpr = do
             toks <- hLex prog
             e <- hParse toks
@@ -16,5 +17,5 @@ main = do
     print eexpr
     let env = mkDefaultEnv
     print env
-    let res = fmap (eval env) eexpr
+    let res = (eval env) =<< eexpr
     print res

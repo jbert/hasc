@@ -2,11 +2,21 @@ module Hasc.Parse where
 
 import Hasc.Lex
 
-data Expr = Atom Token | HList [Expr]
+data Expr = Atom Token | HList [Expr] | Callable ([Expr] -> Either String Expr)
 
 instance Show Expr where
     show (Atom t) = show t
     show (HList es) = "(" ++ (unwords $ map show es) ++ ")"
+    show (Callable _) = "<callable>"
+
+asNum :: Expr -> Maybe Double
+asNum (Atom (Val (Nbr x))) = Just x
+asNum _ = Nothing
+
+asString :: Expr -> Maybe String
+asString (Atom (Val (Str x))) = Just x
+asString (Atom (Val (Sym x))) = Just x
+asString _ = Nothing
 
 hParseList :: [Expr] -> [Token] -> Either String (Expr, [Token])
 hParseList _ [] = Left "No closing parens for list expression"
