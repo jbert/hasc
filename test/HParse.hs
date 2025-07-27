@@ -12,27 +12,37 @@ data TD = TD {prog :: String, expected :: Either String Expr}
 testData :: [TD]
 testData =
     [ TD "1" (Right (Atom $ Val $ Nbr 1.0))
-    {-
+    , TD
+        "(+ 1 2)"
+        ( Right
+            ( HList
+                [ Atom $ Val $ Sym "+"
+                , Atom $ Val $ Nbr 1.0
+                , Atom $ Val $ Nbr 2.0
+                ]
+            )
+        )
+    , TD "()" (Right (HList []))
+    , TD "(())" (Right (HList [HList []]))
     , TD
         "(if #t (+ 1 2) (+ 3 4))"
         ( Right
-            [ Open
-            , Val $ Sym "if"
-            , Val $ Bol True
-            , Open
-            , Val $ Sym "+"
-            , Val $ Nbr 1.0
-            , Val $ Nbr 2.0
-            , Close
-            , Open
-            , Val $ Sym "+"
-            , Val $ Nbr 3.0
-            , Val $ Nbr 4.0
-            , Close
-            , Close
-            ]
+            ( HList
+                [ Atom $ Val $ Sym "if"
+                , Atom $ Val $ Bol True
+                , HList
+                    [ Atom $ Val $ Sym "+"
+                    , Atom $ Val $ Nbr 1.0
+                    , Atom $ Val $ Nbr 2.0
+                    ]
+                , HList
+                    [ Atom $ Val $ Sym "+"
+                    , Atom $ Val $ Nbr 3.0
+                    , Atom $ Val $ Nbr 4.0
+                    ]
+                ]
+            )
         )
-        -}
     ]
 
 ----------------
