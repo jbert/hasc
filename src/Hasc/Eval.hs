@@ -55,11 +55,18 @@ hIf env [epred, eth, eel] = do
         Nothing -> Left "if predicate must be boolean"
 hIf _ _ = Left "if must have 3-arity"
 
+hDo :: Env -> [Expr] -> Either String Expr
+hDo env (arg : rest) = do
+    es <- sequence $ map (eval env) (arg : rest)
+    return $ last es
+hDo _ [] = Left "Empty 'do' form"
+
 mkDefaultEnv :: Env
 mkDefaultEnv =
     [ Map.fromList
         [ ("+", Callable plus)
         , ("if", Special hIf)
+        , ("do", Special hDo)
         ]
     ]
 

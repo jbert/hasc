@@ -2,7 +2,11 @@
 
 - Have `Atom` take a `Val`, not a `Token`
 
-- Add special forms (if, do)
+- DONE add parse tests
+
+- DONE Add special forms (if, do)
+
+- add parse tests for if / do
 
   
 - Add lambda
