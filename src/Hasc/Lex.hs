@@ -45,7 +45,7 @@ hLexInSym :: String -> String -> Either String [Token]
 hLexInSym s [] = Right $ [Val $ Sym s]
 hLexInSym s (c : rest)
     | c `elem` symChars = hLexInSym (s ++ [c]) rest
-    | otherwise = insertToken (Val $ Sym s) rest
+    | otherwise = insertToken (Val $ Sym s) (c : rest)
 
 hLexNum :: Double -> String -> Either String [Token]
 hLexNum n [] = Right $ [Val $ Nbr n]

@@ -9,7 +9,11 @@ testData :: [TD]
 testData =
     [ TD "(" (Right [Open])
     , TD ")" (Right [Close])
+    , TD "))" (Right [Close, Close])
     , TD "()" (Right [Open, Close])
+    , TD ")(" (Right [Close, Open])
+    , TD "(())" (Right [Open, Open, Close, Close])
+    , TD "((a))" (Right [Open, Open, Val $ Sym "a", Close, Close])
     , TD "\"\"" (Right [Val $ Str ""])
     , TD "\"a\"" (Right [Val $ Str "a"])
     , TD "\"abc-d_e_5\"" (Right [Val $ Str "abc-d_e_5"])
