@@ -5,7 +5,12 @@ import Data.Char
 
 -- import Debug.Trace
 
-data Val = Sym {symVal :: String} | Nbr {nbrVal :: Double} | Str {strVal :: String} deriving (Eq)
+data Val
+    = Sym {symVal :: String}
+    | Nbr {nbrVal :: Double}
+    | Str {strVal :: String}
+    | Bol {boolVal :: Bool}
+    deriving (Eq)
 
 data Token
     = Open
@@ -19,6 +24,7 @@ instance Show Token where
     show (Val (Sym s)) = s
     show (Val (Str s)) = s
     show (Val (Nbr n)) = show n
+    show (Val (Bol v)) = show v
 
 insertToken :: Token -> String -> Either String [Token]
 insertToken t s = fmap (t :) (hLex s)
@@ -31,6 +37,12 @@ hLexInStr s ('\\' : '"' : rest) = hLexInStr (s ++ "\"") rest
 hLexInStr _ ('\\' : c : _) = Left ("Unknown backslash escape: '" ++ [c] ++ "'")
 hLexInStr s (c : rest) = hLexInStr (s ++ [c]) rest
 hLexInStr _ [] = Left "String with no closing quote"
+
+hLexBool :: String -> Either String [Token]
+hLexBool ('t' : rest) = insertToken (Val $ Bol True) rest
+hLexBool ('f' : rest) = insertToken (Val $ Bol False) rest
+hLexBool (c : _) = Left $ "Non-bool token: #" ++ [c]
+hLexBool [] = Left "# with no t or f"
 
 alphaChars :: String
 alphaChars = ['a' .. 'z'] ++ ['A' .. 'Z']
@@ -61,5 +73,6 @@ hLex s@(c : rest)
     | c == ')' = insertToken Close rest
     | c == ' ' = hLex rest
     | c == '"' = hLexInStr "" rest
+    | c == '#' = hLexBool rest
     | c `elem` digitChars = hLexNum 0 s
     | otherwise = hLexInSym "" s

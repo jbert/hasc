@@ -1,5 +1,7 @@
 - add eval tests
 
+- Have `Atom` take a `Val`, not a `Token`
+
 - Add special forms (if, do)
 
   

@@ -26,6 +26,10 @@ testData =
     , TD "0" (Right [Val $ Nbr 0])
     , TD "\"a\\a\"" (Left "Unknown backslash escape: 'a'")
     , TD "(foo 0)" (Right [Open, Val $ Sym "foo", Val $ Nbr 0, Close])
+    , TD "#t" (Right [Val $ Bol True])
+    , TD "#f" (Right [Val $ Bol False])
+    , TD "#a" (Left "Non-bool token: #a")
+    , TD "(a (b))" (Right [Open, Val $ Sym "a", Open, Val $ Sym "b", Close, Close])
     ]
 
 ----------------
