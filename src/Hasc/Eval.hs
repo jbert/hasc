@@ -18,6 +18,11 @@ instance Show Expr where
     show (Callable _) = "<callable>"
     show (Special _) = "<special>"
 
+instance Eq Expr where
+    (==) (Atom a) (Atom b) = a == b
+    (==) (HList a) (HList b) = and $ [(length a == length b)] ++ zipWith (==) a b
+    (==) _ _ = False
+
 asNum :: Expr -> Maybe Double
 asNum (Atom (Val (Nbr x))) = Just x
 asNum _ = Nothing

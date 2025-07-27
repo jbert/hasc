@@ -30,6 +30,25 @@ testData =
     , TD "#f" (Right [Val $ Bol False])
     , TD "#a" (Left "Non-bool token: #a")
     , TD "(a (b))" (Right [Open, Val $ Sym "a", Open, Val $ Sym "b", Close, Close])
+    , TD
+        "(if #t (+ 1 2) (+ 3 4))"
+        ( Right
+            [ Open
+            , Val $ Sym "if"
+            , Val $ Bol True
+            , Open
+            , Val $ Sym "+"
+            , Val $ Nbr 1.0
+            , Val $ Nbr 2.0
+            , Close
+            , Open
+            , Val $ Sym "+"
+            , Val $ Nbr 3.0
+            , Val $ Nbr 4.0
+            , Close
+            , Close
+            ]
+        )
     ]
 
 ----------------
