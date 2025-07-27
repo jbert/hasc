@@ -7,13 +7,13 @@ import Debug.Trace
 import Hasc.Lex
 
 data Expr
-    = Atom Token
+    = Atom Val
     | HList [Expr]
     | Callable ([Expr] -> Either String Expr)
     | Special (Env -> [Expr] -> Either String Expr)
 
 instance Show Expr where
-    show (Atom t) = show t
+    show (Atom v) = show v
     show (HList es) = "(" ++ (unwords $ map show es) ++ ")"
     show (Callable _) = "<callable>"
     show (Special _) = "<special>"
@@ -24,16 +24,16 @@ instance Eq Expr where
     (==) _ _ = False
 
 asNum :: Expr -> Maybe Double
-asNum (Atom (Val (Nbr x))) = Just x
+asNum (Atom (Nbr x)) = Just x
 asNum _ = Nothing
 
 asString :: Expr -> Maybe String
-asString (Atom (Val (Str x))) = Just x
-asString (Atom (Val (Sym x))) = Just x
+asString (Atom (Str x)) = Just x
+asString (Atom (Sym x)) = Just x
 asString _ = Nothing
 
 asBool :: Expr -> Maybe Bool
-asBool (Atom (Val (Bol v))) = Just v
+asBool (Atom (Bol v)) = Just v
 -- Although this is an opportunity for 'truthy' values
 asBool _ = Nothing
 
@@ -43,7 +43,7 @@ type Env = [Frame]
 plus :: [Expr] -> Either String Expr
 plus es =
     let mvs = sequence $ map asNum es
-    in (trace $ show es) $ fmap (Atom . Val . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
+    in (trace $ show es) $ fmap (Atom . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
 
 hIf :: Env -> [Expr] -> Either String Expr
 hIf env [epred, eth, eel] = do
@@ -79,7 +79,7 @@ envLookup (f : rest) s =
         Just v -> Right v
 
 eval :: Env -> Expr -> Either String Expr
-eval env (Atom (Val (Sym s))) = envLookup env s
+eval env (Atom (Sym s)) = envLookup env s
 eval _ (Atom a) = Right $ Atom a
 eval _ (Callable _) = Left "Can't evaluate callable directly"
 eval _ (Special _) = Left "Can't evaluate callable directly"

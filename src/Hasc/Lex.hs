@@ -10,7 +10,7 @@ data Val
     | Nbr {nbrVal :: Double}
     | Str {strVal :: String}
     | Bol {boolVal :: Bool}
-    deriving (Eq)
+    deriving (Eq, Show)
 
 data Token
     = Open

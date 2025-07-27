@@ -18,7 +18,7 @@ hParseList acc toks = do
 hParseOne :: [Token] -> Either String (Expr, [Token])
 -- hParseOne s | trace ("JB3: " ++ (show s)) False = undefined
 hParseOne [] = Left "Empty expression"
-hParseOne (atom@(Val _) : rest) = Right (Atom atom, rest)
+hParseOne ((Val v) : rest) = Right (Atom v, rest)
 hParseOne (Open : rest) = hParseList [] rest
 hParseOne (_ : _) = Left "Need open parens at start of list"
 

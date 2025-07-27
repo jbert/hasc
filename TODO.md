@@ -1,6 +1,6 @@
 - add eval tests
 
-- Have `Atom` take a `Val`, not a `Token`
+- DONE Have `Atom` take a `Val`, not a `Token`
 
 - DONE add parse tests
 
