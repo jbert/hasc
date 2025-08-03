@@ -3,19 +3,27 @@ module Hasc.Eval where
 import qualified Data.Map as Map
 
 import Data.Either.Utils
-import Debug.Trace
+
+-- import Debug.Trace
 import Hasc.Lex
+
+data Primitive = Plus
+
+data Special = SIf | SDo
 
 data Expr
     = Atom Val
     | HList [Expr]
-    | Callable ([Expr] -> Either String Expr)
-    | Special (Env -> [Expr] -> Either String Expr)
+    | Primitive {primitive :: Primitive}
+    | Special {special :: Special}
+
+class Callable c where
+    invoke :: c -> Env -> [Expr] -> Either String Expr
 
 instance Show Expr where
     show (Atom v) = show v
     show (HList es) = "(" ++ (unwords $ map show es) ++ ")"
-    show (Callable _) = "<callable>"
+    show (Primitive _) = "<primitive>"
     show (Special _) = "<special>"
 
 instance Eq Expr where
@@ -40,33 +48,31 @@ asBool _ = Nothing
 type Frame = Map.Map String Expr
 type Env = [Frame]
 
-plus :: [Expr] -> Either String Expr
-plus es =
-    let mvs = sequence $ map asNum es
-    in (trace $ show es) $ fmap (Atom . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
+instance Callable Primitive where
+    invoke Plus _ es =
+        let mvs = sequence $ map asNum es
+        in fmap (Atom . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
 
-hIf :: Env -> [Expr] -> Either String Expr
-hIf env [epred, eth, eel] = do
-    let mp = asBool epred
-    case mp of
-        Just p ->
-            let v = if p then eth else eel
-            in eval env v
-        Nothing -> Left "if predicate must be boolean"
-hIf _ _ = Left "if must have 3-arity"
-
-hDo :: Env -> [Expr] -> Either String Expr
-hDo env (arg : rest) = do
-    es <- sequence $ map (eval env) (arg : rest)
-    return $ last es
-hDo _ [] = Left "Empty 'do' form"
+instance Callable Special where
+    invoke SIf env [epred, eth, eel] = do
+        let mp = asBool epred
+        case mp of
+            Just p ->
+                let v = if p then eth else eel
+                in eval env v
+            Nothing -> Left "if predicate must be boolean"
+    invoke SIf _ _ = Left "if must have 3-arity"
+    invoke SDo env (arg : rest) = do
+        es <- sequence $ map (eval env) (arg : rest)
+        return $ last es
+    invoke SDo _ [] = Left "Empty 'do' form"
 
 mkDefaultEnv :: Env
 mkDefaultEnv =
     [ Map.fromList
-        [ ("+", Callable plus)
-        , ("if", Special hIf)
-        , ("do", Special hDo)
+        [ ("+", Primitive Plus)
+        , ("if", Special SIf)
+        , ("do", Special SDo)
         ]
     ]
 
@@ -81,16 +87,16 @@ envLookup (f : rest) s =
 eval :: Env -> Expr -> Either String Expr
 eval env (Atom (Sym s)) = envLookup env s
 eval _ (Atom a) = Right $ Atom a
-eval _ (Callable _) = Left "Can't evaluate callable directly"
+eval _ (Primitive _) = Left "Can't evaluate primitive directly"
 eval _ (Special _) = Left "Can't evaluate callable directly"
 eval env (HList (ef : eargs)) = do
     f <- eval env ef
     res <- case f of
-        Callable c -> do
-            args <- (sequence $ map (eval env) eargs)
-            Right $ c args
-        -- Same as callable, but we pass env and don't pre-evaluate args
-        Special c -> Right $ c env eargs
+        Primitive p -> do
+            args <- sequence $ map (eval env) eargs
+            return $ invoke p env args
+        -- Same as Primitive, but we pass env and don't pre-evaluate args
+        Special s -> Right $ invoke s env eargs
         _ -> Left "Non-callable in callable position"
     res
 eval _ (HList []) = Left "Eval empty list"
