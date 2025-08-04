@@ -10,7 +10,13 @@ data Val
     | Nbr {nbrVal :: Double}
     | Str {strVal :: String}
     | Bol {boolVal :: Bool}
-    deriving (Eq, Show)
+    deriving (Eq)
+
+instance Show Val where
+    show (Sym s) = s
+    show (Nbr n) = show n
+    show (Str s) = s
+    show (Bol b) = show b
 
 data Token
     = Open
