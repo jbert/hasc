@@ -9,7 +9,7 @@ import Hasc.Lex
 
 data Primitive = Plus
 
-data Special = SIf | SDo | SLambda
+data Special = SIf | SDo | SLambda | SLet
 
 {-
     So SLambda is the special form. Evaluating this gives you an ELambda, which
@@ -89,6 +89,22 @@ instance Callable Special where
         let syms = [s | Atom (Sym s) <- args]
         in Right $ ELambda (Lambda env syms body)
     invoke SLambda _ _ = Left "lambda must have list-of-args and body"
+    -- Could do this as a lambda?
+    invoke SLet env [(HList bindings), body] = do
+        frame <- letParseBindings env bindings
+        eval (frame : env) body
+    invoke SLet _ _ = Left "let must have list-of-bindings and body"
+
+letParseBindings :: Env -> [Expr] -> Either String Frame
+letParseBindings env bindings = do
+    pairs <- sequence $ map (letParseOne env) bindings
+    return $ Map.fromList pairs
+
+letParseOne :: Env -> Expr -> Either String (String, Expr)
+letParseOne env (HList [(Atom (Sym s)), v]) = do
+    v' <- eval env v
+    return (s, v')
+letParseOne _ _ = Left "let-binding must be a (k v) list"
 
 mkDefaultEnv :: Env
 mkDefaultEnv =
@@ -97,6 +113,7 @@ mkDefaultEnv =
         , ("if", Special SIf)
         , ("do", Special SDo)
         , ("lambda", Special SLambda)
+        , ("let", Special SLet)
         ]
     ]
 
@@ -125,6 +142,6 @@ eval env (HList (ef : eargs)) = do
             return $ invoke l env args
         -- Same as Primitive, but we pass env and don't pre-evaluate args
         Special s -> Right $ invoke s env eargs
-        _ -> Left "Non-callable in callable position"
+        _ -> Left $ "Non-callable in callable position: " ++ show f
     res
 eval _ (HList []) = Left "Eval empty list"

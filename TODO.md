@@ -9,7 +9,12 @@
 
 - add error for mismatch between number of lambda args and body
 
-- Add let
+- DONE Add let
+
+- add let* (or whichever one binds-as-it-goes)
+  - rewrite to nested let?
+
+- add error for wrongly-structured let bindings list
 
 - share code for Primitive and ELambda in eval
 
