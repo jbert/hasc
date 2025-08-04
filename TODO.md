@@ -24,6 +24,8 @@
 
 - add print
 
+- tail recursion!?
+
 - add implicit 'do' to lambda
 
 - add top-level define

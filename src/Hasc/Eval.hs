@@ -7,7 +7,7 @@ import Data.Either.Utils
 -- import Debug.Trace
 import Hasc.Lex
 
-data Primitive = Plus
+data Primitive = Plus | Subtract | Sin | Cos
 
 data Special = SIf | SDo | SLambda | SLet
 
@@ -63,6 +63,15 @@ instance Callable Primitive where
     invoke Plus _ es =
         let mvs = sequence $ map asNum es
         in fmap (Atom . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
+    invoke Subtract _ es = do
+        nums <- maybeToEither "Non-numeric args" $ sequence $ map asNum es
+        return $ case nums of
+            (n : rest) -> Atom $ Nbr $ (n - sum rest)
+            [] -> Atom $ Nbr $ 0
+    invoke Sin _ [(Atom (Nbr theta))] = Right $ Atom $ Nbr $ sin theta
+    invoke Sin _ _ = Left "sin takes one numeric argument"
+    invoke Cos _ [(Atom (Nbr theta))] = Right $ Atom $ Nbr $ cos theta
+    invoke Cos _ _ = Left "cos takes one numeric argument"
 
 instance Callable Lambda where
     invoke (Lambda cenv argStrs body) _ args =
@@ -110,6 +119,10 @@ mkDefaultEnv :: Env
 mkDefaultEnv =
     [ Map.fromList
         [ ("+", Primitive Plus)
+        , ("-", Primitive Subtract)
+        , ("sin", Primitive Sin)
+        , ("cos", Primitive Cos)
+        , ("pi", Atom $ Nbr pi)
         , ("if", Special SIf)
         , ("do", Special SDo)
         , ("lambda", Special SLambda)

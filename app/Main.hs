@@ -15,7 +15,8 @@ main = do
     -- let prog = "(do #t (+ 1 2) (+ 3 4))"
     -- let prog = "((lambda (a b) (+ a b)) 1 2)"
     -- let prog = "(let ((a 1) (b 2)) (+ a b))"
-    let prog = "(let ((addOne (lambda (x) (+ 1 x))) (b 2)) (addOne b))"
+    -- let prog = "(let ((addOne (lambda (x) (+ 1 x))) (b 2)) (addOne b))"
+    let prog = "(sin pi)"
     let eexpr = do
             toks <- hLex prog
             e <- hParse toks
