@@ -1,4 +1,3 @@
-- add eval tests
 
 - DONE Have `Atom` take a `Val`, not a `Token`
 
@@ -8,9 +7,15 @@
 
 - DONE Add lambda
 
-- share code for Primitive and ELambda in eval
+- add error for mismatch between number of lambda args and body
 
 - Add let
+
+- share code for Primitive and ELambda in eval
+
+- add eval tests
+  - add tests for lambda eval
+  - include environment capture
 
 - add print
 

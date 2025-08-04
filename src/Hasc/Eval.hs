@@ -11,6 +11,13 @@ data Primitive = Plus
 
 data Special = SIf | SDo | SLambda
 
+{-
+    So SLambda is the special form. Evaluating this gives you an ELambda, which
+    is the expression.
+    This has exactly the same semantics as Primitive (evaluate all args, then
+    apply the Callable to the resulting expression list), but I'm struggling
+    to share code.
+-}
 data Lambda = Lambda {lEnv :: Env, lArgs :: [String], lBody :: Expr}
 
 data Expr
