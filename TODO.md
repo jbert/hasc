@@ -6,15 +6,23 @@
 
 - DONE Add special forms (if, do)
 
-- add parse tests for if / do
+- DONE Add lambda
 
-  
-- Add lambda
+- share code for Primitive and ELambda in eval
 
 - Add let
 
 - add print
 
+- add implicit 'do' to lambda
+
+- add top-level define
+
+- add lambda 'define' syntactic sugar
+  - as primitive or code transformation?
+
+- add parse tests for if / do
+  
 - add some basic library funcs
 
 - work out "whole file" semantics

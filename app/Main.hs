@@ -12,7 +12,8 @@ main = do
     -- let prog = "(if #t (+ 1 2) (+ 3 4))"
     -- let prog = "(if #f 2 3)"
     -- let prog = "(())"
-    let prog = "(do #t (+ 1 2) (+ 3 4))"
+    -- let prog = "(do #t (+ 1 2) (+ 3 4))"
+    let prog = "((lambda (a b) (+ a b)) 1 2)"
     let eexpr = do
             toks <- hLex prog
             e <- hParse toks

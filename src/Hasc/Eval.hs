@@ -9,13 +9,16 @@ import Hasc.Lex
 
 data Primitive = Plus
 
-data Special = SIf | SDo
+data Special = SIf | SDo | SLambda
+
+data Lambda = Lambda {lEnv :: Env, lArgs :: [String], lBody :: Expr}
 
 data Expr
     = Atom Val
     | HList [Expr]
     | Primitive {primitive :: Primitive}
     | Special {special :: Special}
+    | ELambda {lambda :: Lambda}
 
 class Callable c where
     invoke :: c -> Env -> [Expr] -> Either String Expr
@@ -25,6 +28,7 @@ instance Show Expr where
     show (HList es) = "(" ++ (unwords $ map show es) ++ ")"
     show (Primitive _) = "<primitive>"
     show (Special _) = "<special>"
+    show (ELambda (Lambda _ args _)) = "<lambda: (" ++ (unwords args) ++ ")>"
 
 instance Eq Expr where
     (==) (Atom a) (Atom b) = a == b
@@ -53,6 +57,14 @@ instance Callable Primitive where
         let mvs = sequence $ map asNum es
         in fmap (Atom . Nbr . sum) $ maybeToEither "Non-numeric args" mvs
 
+instance Callable Lambda where
+    invoke (Lambda cenv argStrs body) _ args =
+        let
+            frame = Map.fromList $ zip argStrs args
+            env = frame : cenv
+        in
+            eval env body
+
 instance Callable Special where
     invoke SIf env [epred, eth, eel] = do
         let mp = asBool epred
@@ -66,6 +78,10 @@ instance Callable Special where
         es <- sequence $ map (eval env) (arg : rest)
         return $ last es
     invoke SDo _ [] = Left "Empty 'do' form"
+    invoke SLambda env [(HList args), body] =
+        let syms = [s | Atom (Sym s) <- args]
+        in Right $ ELambda (Lambda env syms body)
+    invoke SLambda _ _ = Left "lambda must have list-of-args and body"
 
 mkDefaultEnv :: Env
 mkDefaultEnv =
@@ -73,6 +89,7 @@ mkDefaultEnv =
         [ ("+", Primitive Plus)
         , ("if", Special SIf)
         , ("do", Special SDo)
+        , ("lambda", Special SLambda)
         ]
     ]
 
@@ -89,12 +106,16 @@ eval env (Atom (Sym s)) = envLookup env s
 eval _ (Atom a) = Right $ Atom a
 eval _ (Primitive _) = Left "Can't evaluate primitive directly"
 eval _ (Special _) = Left "Can't evaluate callable directly"
+eval _ (ELambda _) = Left "Can't evaluate lambda obj"
 eval env (HList (ef : eargs)) = do
     f <- eval env ef
     res <- case f of
         Primitive p -> do
             args <- sequence $ map (eval env) eargs
             return $ invoke p env args
+        ELambda l -> do
+            args <- sequence $ map (eval env) eargs
+            return $ invoke l env args
         -- Same as Primitive, but we pass env and don't pre-evaluate args
         Special s -> Right $ invoke s env eargs
         _ -> Left "Non-callable in callable position"
