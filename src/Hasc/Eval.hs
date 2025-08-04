@@ -23,9 +23,9 @@ data Lambda = Lambda {lEnv :: Env, lArgs :: [String], lBody :: Expr}
 data Expr
     = Atom Val
     | HList [Expr]
-    | Primitive {primitive :: Primitive}
-    | Special {special :: Special}
-    | ELambda {lambda :: Lambda}
+    | Primitive Primitive
+    | Special Special
+    | ELambda Lambda
 
 class Callable c where
     invoke :: c -> Env -> [Expr] -> Either String Expr
