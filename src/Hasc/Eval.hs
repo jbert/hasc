@@ -125,8 +125,8 @@ mkDefaultEnv =
         , ("-", Primitive Subtract)
         , ("sin", Primitive Sin)
         , ("cos", Primitive Cos)
-            -- Special forms, get unevaluated args
-            ("if", Special SIf)
+        , -- Special forms, get unevaluated args
+          ("if", Special SIf)
         , ("do", Special SDo)
         , ("lambda", Special SLambda)
         , ("let", Special SLet)
